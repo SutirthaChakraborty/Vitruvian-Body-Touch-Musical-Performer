@@ -1,0 +1,1033 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vitruvian Body-Touch Musical Performer</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #5f27cd 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: white;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(ellipse at center, rgba(255,255,255,0.1) 0%, transparent 70%);
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .header {
+            text-align: center;
+            padding: 2rem 1rem;
+            animation: fadeInDown 0.8s ease;
+            background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.05) 100%);
+            backdrop-filter: blur(15px);
+            border-radius: 20px;
+            margin: 1rem 2rem 0 2rem;
+            border: 1px solid rgba(255,255,255,0.2);
+            box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+        }
+
+        .header h1 {
+            font-size: 2.8rem;
+            margin-bottom: 0.3rem;
+            text-shadow: 2px 2px 8px rgba(0,0,0,0.4);
+            background: linear-gradient(135deg, #ffd700 0%, #ffed4e 50%, #fff 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+        }
+
+        .header .subtitle {
+            font-size: 1.3rem;
+            margin-bottom: 1rem;
+            color: rgba(255,255,255,0.9);
+            font-weight: 300;
+            font-style: italic;
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.3);
+        }
+
+        .header .authors {
+            font-size: 1rem;
+            color: rgba(255,255,255,0.8);
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid rgba(255,255,255,0.2);
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 0.8rem;
+        }
+
+        .author {
+            background: rgba(255,255,255,0.1);
+            padding: 0.4rem 0.8rem;
+            border-radius: 20px;
+            font-weight: 500;
+            border: 1px solid rgba(255,255,255,0.15);
+            transition: all 0.3s ease;
+        }
+
+        .author:hover {
+            background: rgba(255,255,255,0.2);
+            transform: translateY(-1px);
+        }
+
+        .header .description {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            margin-top: 1rem;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            line-height: 1.4;
+        }
+
+        .main-container {
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(20px);
+            border-radius: 25px;
+            padding: 25px;
+            margin: 20px;
+            box-shadow: 
+                0 25px 50px rgba(0,0,0,0.25),
+                0 0 0 1px rgba(255,255,255,0.1),
+                inset 0 1px 0 rgba(255,255,255,0.2);
+            animation: fadeInUp 0.8s ease;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .canvas-container {
+            position: relative;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 
+                0 15px 35px rgba(0,0,0,0.4),
+                0 0 0 1px rgba(255,255,255,0.1);
+            background: rgba(0,0,0,0.2);
+        }
+
+        #videoCanvas {
+            display: block;
+            border-radius: 15px;
+            max-width: 100%;
+            height: auto;
+        }
+
+        .controls {
+            display: flex;
+            gap: 20px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .control-group {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 15px;
+            border-radius: 10px;
+            backdrop-filter: blur(5px);
+        }
+
+        .control-group h3 {
+            margin-bottom: 10px;
+            font-size: 1rem;
+            opacity: 0.9;
+        }
+
+        button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        button.active {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        }
+
+        .chord-buttons {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .chord-btn {
+            padding: 8px 16px;
+            font-size: 0.9rem;
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .chord-btn.active {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        }
+
+        .status-panel {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 20px;
+            animation: fadeIn 0.8s ease;
+        }
+
+        .status-item {
+            display: flex;
+            justify-content: space-between;
+            margin: 8px 0;
+            padding: 5px 10px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 5px;
+        }
+
+        .status-value {
+            font-weight: bold;
+            color: #ffd700;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 20px;
+        }
+
+        .spinner {
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top: 3px solid white;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 10px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .instructions {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px;
+            max-width: 800px;
+        }
+
+        .instructions h2 {
+            margin-bottom: 15px;
+            color: #ffd700;
+        }
+
+        .instructions ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .instructions li {
+            margin: 10px 0;
+            padding-left: 25px;
+            position: relative;
+        }
+
+        .instructions li:before {
+            content: "🎵";
+            position: absolute;
+            left: 0;
+        }
+
+        .volume-control {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .volume-slider {
+            width: 150px;
+            height: 6px;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 3px;
+            outline: none;
+            -webkit-appearance: none;
+            appearance: none;
+        }
+
+        .volume-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 16px;
+            height: 16px;
+            background: #ffd700;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+
+        .volume-slider::-moz-range-thumb {
+            width: 16px;
+            height: 16px;
+            background: #ffd700;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 1.8rem;
+            }
+            
+            .controls {
+                flex-direction: column;
+                align-items: stretch;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Vitruvian Whole‑Body Creative Action</h1>
+        <div class="subtitle">A Proposal for the Struck‑String Interaction Framework</div>
+        <div class="authors">
+            <span class="author">Sutirtha Chakraborty</span>
+            <span class="author">Damián Keller</span>
+            <span class="author">Joseph Timoney</span>
+        </div>
+        <div class="description">Move your body to create beautiful music in real-time through advanced pose detection and musical synthesis</div>
+    </div>
+
+    <div class="main-container">
+        <div class="canvas-container">
+            <canvas id="videoCanvas" width="640" height="480"></canvas>
+        </div>
+
+        <div class="controls">
+            <div class="control-group">
+                <h3>Camera Control</h3>
+                <button id="startBtn">Start Performance</button>
+            </div>
+
+            <div class="control-group">
+                <h3>Current Chord</h3>
+                <div class="chord-buttons">
+                    <button class="chord-btn active" data-chord="Am">Am</button>
+                    <button class="chord-btn" data-chord="C">C</button>
+                    <button class="chord-btn" data-chord="G">G</button>
+                    <button class="chord-btn" data-chord="F">F</button>
+                    <button class="chord-btn" data-chord="Em">Em</button>
+                </div>
+            </div>
+
+            <div class="control-group">
+                <h3>Volume</h3>
+                <div class="volume-control">
+                    <span>🔊</span>
+                    <input type="range" class="volume-slider" id="volumeSlider" min="0" max="100" value="50">
+                    <span id="volumeValue">50%</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="status-panel">
+            <div class="status-item">
+                <span>Detection Status:</span>
+                <span class="status-value" id="detectionStatus">Not Started</span>
+            </div>
+            <div class="status-item">
+                <span>Active Instrument:</span>
+                <span class="status-value" id="activeInstrument">None</span>
+            </div>
+            <div class="status-item">
+                <span>Movement Velocity:</span>
+                <span class="status-value" id="movementVelocity">0</span>
+            </div>
+            <div class="status-item">
+                <span>Last Note:</span>
+                <span class="status-value" id="lastNote">-</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="instructions">
+        <h2>How to Play</h2>
+        <ul>
+            <li><strong>Arms/Wrists:</strong> Move to trigger synth/warm pad sounds</li>
+            <li><strong>Feet:</strong> Move to trigger piano strums</li>
+            <li><strong>Right Index Finger Zones:</strong>
+                <ul style="margin-top: 5px; padding-left: 20px;">
+                    <li>• Far (outside red circle): Continuous synth note</li>
+                    <li>• Close (inside green circle): Piano strum when crossing body line</li>
+                    <li>• Middle (between circles): Piano arpeggio when crossing body line</li>
+                </ul>
+            </li>
+            <li><strong>Body Line:</strong> Imaginary line from right shoulder to right hip</li>
+            <li><strong>Visual Feedback:</strong> Vitruvian square and circles show your movement zones</li>
+        </ul>
+    </div>
+
+    <!-- MediaPipe Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/control_utils/control_utils.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils/drawing_utils.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/holistic/holistic.js"></script>
+
+    <script>
+        // Audio Context and Sound Synthesis
+        class SoundEngine {
+            constructor() {
+                this.audioContext = null;
+                this.masterGain = null;
+                this.volume = 0.5;
+                this.activeNotes = new Map();
+                this.scales = {
+                    'Am': [57, 60, 62, 64, 65, 67, 69, 72],
+                    'C': [60, 62, 64, 65, 67, 69, 71, 72],
+                    'G': [55, 57, 59, 60, 62, 64, 66, 67],
+                    'F': [53, 55, 57, 58, 60, 62, 64, 65],
+                    'Em': [52, 55, 57, 59, 60, 62, 64, 67]
+                };
+                this.chords = {
+                    'Am': [60, 64, 67],
+                    'C': [60, 64, 69],
+                    'G': [55, 59, 62],
+                    'F': [53, 57, 60],
+                    'Em': [52, 55, 59]
+                };
+            }
+
+            init() {
+                this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                this.masterGain = this.audioContext.createGain();
+                this.masterGain.connect(this.audioContext.destination);
+                this.masterGain.gain.value = this.volume;
+            }
+
+            setVolume(value) {
+                this.volume = value / 100;
+                if (this.masterGain) {
+                    this.masterGain.gain.value = this.volume;
+                }
+            }
+
+            midiToFreq(midi) {
+                return 440 * Math.pow(2, (midi - 69) / 12);
+            }
+
+            playNote(note, duration = 0.3, type = 'synth') {
+                if (!this.audioContext) return;
+
+                const freq = this.midiToFreq(note);
+                const osc = this.audioContext.createOscillator();
+                const gain = this.audioContext.createGain();
+                const filter = this.audioContext.createBiquadFilter();
+
+                // Configure oscillator based on instrument type
+                if (type === 'synth') {
+                    osc.type = 'sawtooth';
+                    filter.type = 'lowpass';
+                    filter.frequency.value = 2000;
+                    filter.Q.value = 5;
+                } else if (type === 'piano') {
+                    osc.type = 'triangle';
+                    filter.type = 'lowpass';
+                    filter.frequency.value = 4000;
+                }
+
+                osc.frequency.value = freq;
+                osc.connect(filter);
+                filter.connect(gain);
+                gain.connect(this.masterGain);
+
+                // ADSR envelope
+                const now = this.audioContext.currentTime;
+                gain.gain.setValueAtTime(0, now);
+                gain.gain.linearRampToValueAtTime(0.3, now + 0.01); // Attack
+                gain.gain.exponentialRampToValueAtTime(0.2, now + 0.1); // Decay
+                gain.gain.exponentialRampToValueAtTime(0.01, now + duration); // Release
+
+                osc.start(now);
+                osc.stop(now + duration);
+
+                return { osc, gain, note };
+            }
+
+            playContinuousNote(note, type = 'synth') {
+                if (!this.audioContext) return;
+                
+                // Stop any existing continuous note
+                this.stopContinuousNote(note);
+
+                const freq = this.midiToFreq(note);
+                const osc = this.audioContext.createOscillator();
+                const gain = this.audioContext.createGain();
+                const filter = this.audioContext.createBiquadFilter();
+
+                osc.type = 'sawtooth';
+                osc.frequency.value = freq;
+                
+                filter.type = 'lowpass';
+                filter.frequency.value = 1500;
+                filter.Q.value = 10;
+
+                osc.connect(filter);
+                filter.connect(gain);
+                gain.connect(this.masterGain);
+
+                const now = this.audioContext.currentTime;
+                gain.gain.setValueAtTime(0, now);
+                gain.gain.linearRampToValueAtTime(0.2, now + 0.05);
+
+                osc.start(now);
+                
+                this.activeNotes.set(note, { osc, gain });
+            }
+
+            stopContinuousNote(note) {
+                if (this.activeNotes.has(note)) {
+                    const { osc, gain } = this.activeNotes.get(note);
+                    const now = this.audioContext.currentTime;
+                    gain.gain.exponentialRampToValueAtTime(0.01, now + 0.1);
+                    osc.stop(now + 0.1);
+                    this.activeNotes.delete(note);
+                }
+            }
+
+            playArpeggio(chordName, duration = 0.15) {
+                const notes = this.chords[chordName];
+                notes.forEach((note, index) => {
+                    setTimeout(() => {
+                        this.playNote(note, duration * 2, 'piano');
+                    }, index * 100);
+                });
+            }
+
+            getRandomNote(chordName) {
+                const scale = this.scales[chordName];
+                return scale[Math.floor(Math.random() * scale.length)];
+            }
+        }
+
+        // Movement Tracker
+        class MovementTracker {
+            constructor(bufferSize = 10) {
+                this.positions = [];
+                this.bufferSize = bufferSize;
+                this.lastDirection = null;
+                this.lastTriggerTime = 0;
+                this.minTriggerInterval = 250;
+                this.directionThreshold = 0.01;
+            }
+
+            update(position) {
+                this.positions.push(position);
+                if (this.positions.length > this.bufferSize) {
+                    this.positions.shift();
+                }
+            }
+
+            getSmoothedSpeed() {
+                if (this.positions.length < 2) return 0;
+                
+                let totalDiff = 0;
+                for (let i = 0; i < this.positions.length - 1; i++) {
+                    totalDiff += Math.abs(this.positions[i + 1].y - this.positions[i].y);
+                }
+                return totalDiff / (this.positions.length - 1);
+            }
+
+            getDirection() {
+                if (this.positions.length < 3) return null;
+                
+                const recent = this.positions.slice(-3);
+                const movement = (recent[2].y - recent[0].y) / 2;
+                
+                if (Math.abs(movement) < this.directionThreshold) return null;
+                return movement < 0 ? 'up' : 'down';
+            }
+
+            shouldTrigger() {
+                if (this.positions.length < 3) return false;
+                
+                const currentTime = Date.now();
+                if (currentTime - this.lastTriggerTime < this.minTriggerInterval) return false;
+                
+                const currentDirection = this.getDirection();
+                if (!currentDirection) return false;
+                
+                if (this.lastDirection && currentDirection !== this.lastDirection) {
+                    this.lastDirection = currentDirection;
+                    this.lastTriggerTime = currentTime;
+                    return true;
+                }
+                
+                this.lastDirection = currentDirection;
+                return false;
+            }
+
+            getVelocity() {
+                const speed = this.getSmoothedSpeed();
+                return Math.min(Math.max(speed * 3000, 40), 127);
+            }
+        }
+
+        // Main Application
+        class VitruvianPerformer {
+            constructor() {
+                this.video = null;
+                this.canvas = document.getElementById('videoCanvas');
+                this.ctx = this.canvas.getContext('2d');
+                this.holistic = null;
+                this.camera = null;
+                this.isRunning = false;
+                
+                this.soundEngine = new SoundEngine();
+                this.currentChord = 'Am';
+                
+                // Movement trackers
+                this.leftFootTracker = new MovementTracker(15);
+                this.rightFootTracker = new MovementTracker(15);
+                this.leftWristTracker = new MovementTracker();
+                this.rightWristTracker = new MovementTracker();
+                
+                // Index finger tracking
+                this.prevIndexSide = null;
+                this.prevIndexPoint = null;
+                this.continuousSynthActive = false;
+                this.continuousSynthNote = null;
+                
+                this.setupEventListeners();
+            }
+
+            setupEventListeners() {
+                document.getElementById('startBtn').addEventListener('click', () => {
+                    if (!this.isRunning) {
+                        this.start();
+                    } else {
+                        this.stop();
+                    }
+                });
+
+                document.querySelectorAll('.chord-btn').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        document.querySelectorAll('.chord-btn').forEach(b => b.classList.remove('active'));
+                        e.target.classList.add('active');
+                        this.currentChord = e.target.dataset.chord;
+                    });
+                });
+
+                const volumeSlider = document.getElementById('volumeSlider');
+                volumeSlider.addEventListener('input', (e) => {
+                    const value = e.target.value;
+                    document.getElementById('volumeValue').textContent = value + '%';
+                    this.soundEngine.setVolume(value);
+                });
+            }
+
+            async start() {
+                this.soundEngine.init();
+                
+                const startBtn = document.getElementById('startBtn');
+                startBtn.textContent = 'Stop Performance';
+                startBtn.classList.add('active');
+                
+                document.getElementById('detectionStatus').textContent = 'Initializing...';
+                
+                this.isRunning = true;
+                
+                // Initialize MediaPipe Holistic
+                this.holistic = new Holistic({
+                    locateFile: (file) => {
+                        return `https://cdn.jsdelivr.net/npm/@mediapipe/holistic/${file}`;
+                    }
+                });
+                
+                this.holistic.setOptions({
+                    modelComplexity: 1,
+                    smoothLandmarks: true,
+                    enableSegmentation: false,
+                    smoothSegmentation: false,
+                    minDetectionConfidence: 0.5,
+                    minTrackingConfidence: 0.5
+                });
+                
+                this.holistic.onResults(this.onResults.bind(this));
+                
+                // Setup camera
+                const videoElement = document.createElement('video');
+                this.camera = new Camera(videoElement, {
+                    onFrame: async () => {
+                        if (this.isRunning) {
+                            await this.holistic.send({ image: videoElement });
+                        }
+                    },
+                    width: 640,
+                    height: 480
+                });
+                
+                this.camera.start();
+                document.getElementById('detectionStatus').textContent = 'Active';
+            }
+
+            stop() {
+                this.isRunning = false;
+                
+                if (this.camera) {
+                    this.camera.stop();
+                }
+                
+                // Stop all continuous notes
+                this.soundEngine.activeNotes.forEach((_, note) => {
+                    this.soundEngine.stopContinuousNote(note);
+                });
+                
+                const startBtn = document.getElementById('startBtn');
+                startBtn.textContent = 'Start Performance';
+                startBtn.classList.remove('active');
+                
+                document.getElementById('detectionStatus').textContent = 'Stopped';
+                document.getElementById('activeInstrument').textContent = 'None';
+                
+                // Clear canvas
+                this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+            }
+
+            onResults(results) {
+                // Clear canvas
+                this.ctx.save();
+                this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+                
+                // Draw the video feed (mirrored)
+                this.ctx.scale(-1, 1);
+                this.ctx.translate(-this.canvas.width, 0);
+                this.ctx.drawImage(results.image, 0, 0, this.canvas.width, this.canvas.height);
+                this.ctx.restore();
+                
+                if (results.poseLandmarks) {
+                    // Mirror the landmarks horizontally to match the flipped video
+                    const flippedPoseLandmarks = results.poseLandmarks.map(landmark => ({
+                        ...landmark,
+                        x: 1 - landmark.x
+                    }));
+                    
+                    const flippedRightHandLandmarks = results.rightHandLandmarks ? 
+                        results.rightHandLandmarks.map(landmark => ({
+                            ...landmark,
+                            x: 1 - landmark.x
+                        })) : null;
+                    
+                    // Draw pose landmarks
+                    this.drawConnectors(flippedPoseLandmarks);
+                    this.drawLandmarks(flippedPoseLandmarks);
+                    
+                    // Draw Vitruvian elements
+                    const vitruvianInfo = this.drawVitruvianElements(flippedPoseLandmarks);
+                    
+                    // Process movements
+                    this.processFeetMovements(flippedPoseLandmarks, vitruvianInfo);
+                    this.processWristMovements(flippedPoseLandmarks, vitruvianInfo);
+                    
+                    if (flippedRightHandLandmarks && vitruvianInfo) {
+                        this.processIndexFingerGestures(
+                            flippedPoseLandmarks,
+                            flippedRightHandLandmarks,
+                            vitruvianInfo
+                        );
+                    }
+                }
+            }
+
+            drawConnectors(landmarks) {
+                const connections = POSE_CONNECTIONS;
+                this.ctx.strokeStyle = 'rgba(255, 255, 255, 0.5)';
+                this.ctx.lineWidth = 2;
+                
+                connections.forEach(([start, end]) => {
+                    const startPoint = landmarks[start];
+                    const endPoint = landmarks[end];
+                    if (startPoint && endPoint) {
+                        this.ctx.beginPath();
+                        this.ctx.moveTo(startPoint.x * this.canvas.width, startPoint.y * this.canvas.height);
+                        this.ctx.lineTo(endPoint.x * this.canvas.width, endPoint.y * this.canvas.height);
+                        this.ctx.stroke();
+                    }
+                });
+            }
+
+            drawLandmarks(landmarks) {
+                this.ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
+                landmarks.forEach(landmark => {
+                    if (landmark) {
+                        this.ctx.beginPath();
+                        this.ctx.arc(
+                            landmark.x * this.canvas.width,
+                            landmark.y * this.canvas.height,
+                            3,
+                            0,
+                            2 * Math.PI
+                        );
+                        this.ctx.fill();
+                    }
+                });
+            }
+
+            drawVitruvianElements(landmarks) {
+                const nose = landmarks[0];
+                const leftFoot = landmarks[31];
+                const rightFoot = landmarks[32];
+                
+                if (!nose || !leftFoot || !rightFoot) return null;
+                
+                const lowestFootY = Math.max(leftFoot.y, rightFoot.y);
+                const centerX = ((leftFoot.x + rightFoot.x) / 2) * this.canvas.width;
+                const centerY = ((nose.y + lowestFootY) / 2) * this.canvas.height;
+                const bodyHeight = Math.abs(nose.y - lowestFootY) * this.canvas.height;
+                const squareSize = bodyHeight;
+                
+                // Draw square
+                this.ctx.strokeStyle = 'rgba(255, 255, 100, 0.5)';
+                this.ctx.lineWidth = 3;
+                this.ctx.strokeRect(
+                    centerX - squareSize / 2,
+                    centerY - squareSize / 2,
+                    squareSize,
+                    squareSize
+                );
+                
+                // Draw zones (circles)
+                const innerRadius = squareSize * 0.4;
+                const outerRadius = squareSize * 0.8;
+                
+                this.ctx.strokeStyle = 'rgba(0, 255, 0, 0.5)';
+                this.ctx.beginPath();
+                this.ctx.arc(centerX, centerY, innerRadius, 0, 2 * Math.PI);
+                this.ctx.stroke();
+                
+                this.ctx.strokeStyle = 'rgba(255, 0, 0, 0.5)';
+                this.ctx.beginPath();
+                this.ctx.arc(centerX, centerY, outerRadius, 0, 2 * Math.PI);
+                this.ctx.stroke();
+                
+                return {
+                    center: { x: centerX, y: centerY },
+                    squareSize,
+                    innerRadius,
+                    outerRadius,
+                    vitruvianSize: bodyHeight / Math.hypot(this.canvas.width, this.canvas.height)
+                };
+            }
+
+            processFeetMovements(landmarks, vitruvianInfo) {
+                if (!vitruvianInfo) return;
+                
+                const leftFoot = landmarks[31];
+                const rightFoot = landmarks[32];
+                
+                this.leftFootTracker.update(leftFoot);
+                this.rightFootTracker.update(rightFoot);
+                
+                [this.leftFootTracker, this.rightFootTracker].forEach(tracker => {
+                    if (tracker.shouldTrigger()) {
+                        const velocity = tracker.getVelocity();
+                        const note = this.soundEngine.getRandomNote(this.currentChord);
+                        this.soundEngine.playNote(note, 0.3, 'piano');
+                        
+                        document.getElementById('activeInstrument').textContent = 'Piano (Feet)';
+                        document.getElementById('movementVelocity').textContent = Math.round(velocity);
+                        document.getElementById('lastNote').textContent = `Note ${note}`;
+                        
+                        // Visual feedback
+                        const pos = tracker.positions[tracker.positions.length - 1];
+                        this.ctx.fillStyle = 'rgba(255, 255, 0, 0.8)';
+                        this.ctx.beginPath();
+                        this.ctx.arc(
+                            pos.x * this.canvas.width,
+                            pos.y * this.canvas.height,
+                            15,
+                            0,
+                            2 * Math.PI
+                        );
+                        this.ctx.fill();
+                    }
+                });
+            }
+
+            processWristMovements(landmarks, vitruvianInfo) {
+                if (!vitruvianInfo) return;
+                
+                const leftWrist = landmarks[15];
+                const rightWrist = landmarks[16];
+                
+                this.leftWristTracker.update(leftWrist);
+                this.rightWristTracker.update(rightWrist);
+                
+                [this.leftWristTracker, this.rightWristTracker].forEach(tracker => {
+                    if (tracker.shouldTrigger()) {
+                        const velocity = tracker.getVelocity();
+                        const note = this.soundEngine.getRandomNote(this.currentChord);
+                        this.soundEngine.playNote(note, 0.5, 'synth');
+                        
+                        document.getElementById('activeInstrument').textContent = 'Synth (Wrists)';
+                        document.getElementById('movementVelocity').textContent = Math.round(velocity);
+                        document.getElementById('lastNote').textContent = `Note ${note}`;
+                        
+                        // Visual feedback
+                        const pos = tracker.positions[tracker.positions.length - 1];
+                        this.ctx.fillStyle = 'rgba(255, 0, 255, 0.8)';
+                        this.ctx.beginPath();
+                        this.ctx.arc(
+                            pos.x * this.canvas.width,
+                            pos.y * this.canvas.height,
+                            10,
+                            0,
+                            2 * Math.PI
+                        );
+                        this.ctx.fill();
+                    }
+                });
+            }
+
+            processIndexFingerGestures(poseLandmarks, handLandmarks, vitruvianInfo) {
+                const rightShoulder = poseLandmarks[12];
+                const rightHip = poseLandmarks[24];
+                const indexFinger = handLandmarks[8];
+                
+                if (!rightShoulder || !rightHip || !indexFinger) return;
+                
+                // Calculate which side of body line the finger is on
+                const currentIndexSide = this.pointLineSide(rightShoulder, rightHip, indexFinger);
+                
+                // Calculate distance from center
+                const fingerX = indexFinger.x * this.canvas.width;
+                const fingerY = indexFinger.y * this.canvas.height;
+                const dx = fingerX - vitruvianInfo.center.x;
+                const dy = fingerY - vitruvianInfo.center.y;
+                const dist = Math.hypot(dx, dy);
+                
+                // Draw index finger position
+                this.ctx.fillStyle = 'rgba(255, 0, 0, 0.8)';
+                this.ctx.beginPath();
+                this.ctx.arc(fingerX, fingerY, 8, 0, 2 * Math.PI);
+                this.ctx.fill();
+                
+                // Continuous synth control
+                if (dist > vitruvianInfo.outerRadius) {
+                    if (!this.continuousSynthActive) {
+                        const note = this.soundEngine.getRandomNote(this.currentChord);
+                        this.soundEngine.playContinuousNote(note);
+                        this.continuousSynthActive = true;
+                        this.continuousSynthNote = note;
+                        document.getElementById('activeInstrument').textContent = 'Continuous Synth';
+                        document.getElementById('lastNote').textContent = `Note ${note} (Held)`;
+                    }
+                } else {
+                    if (this.continuousSynthActive) {
+                        this.soundEngine.stopContinuousNote(this.continuousSynthNote);
+                        this.continuousSynthActive = false;
+                        this.continuousSynthNote = null;
+                    }
+                    
+                    // Discrete triggers on crossing
+                    if (this.prevIndexSide !== null && currentIndexSide * this.prevIndexSide < 0) {
+                        const velocity = this.prevIndexPoint ? 
+                            Math.hypot(indexFinger.x - this.prevIndexPoint.x, indexFinger.y - this.prevIndexPoint.y) * 2000 : 80;
+                        
+                        if (dist <= vitruvianInfo.innerRadius) {
+                            // Piano strum
+                            const note = this.soundEngine.getRandomNote(this.currentChord);
+                            this.soundEngine.playNote(note, 0.3, 'piano');
+                            document.getElementById('activeInstrument').textContent = 'Piano (Index)';
+                            document.getElementById('lastNote').textContent = `Note ${note}`;
+                        } else {
+                            // Arpeggio
+                            this.soundEngine.playArpeggio(this.currentChord);
+                            document.getElementById('activeInstrument').textContent = 'Arpeggio';
+                            document.getElementById('lastNote').textContent = `${this.currentChord} Arpeggio`;
+                        }
+                        
+                        document.getElementById('movementVelocity').textContent = Math.round(velocity);
+                    }
+                }
+                
+                this.prevIndexSide = currentIndexSide;
+                this.prevIndexPoint = indexFinger;
+            }
+
+            pointLineSide(A, B, P) {
+                return (B.x - A.x) * (P.y - A.y) - (B.y - A.y) * (P.x - A.x);
+            }
+        }
+
+        // MediaPipe pose connections
+        const POSE_CONNECTIONS = [
+            [0, 1], [1, 2], [2, 3], [3, 7], [0, 4], [4, 5],
+            [5, 6], [6, 8], [9, 10], [11, 12], [11, 13],
+            [13, 15], [15, 17], [15, 19], [15, 21], [17, 19],
+            [12, 14], [14, 16], [16, 18], [16, 20], [16, 22],
+            [18, 20], [11, 23], [12, 24], [23, 24], [23, 25],
+            [24, 26], [25, 27], [26, 28], [27, 29], [28, 30],
+            [29, 31], [30, 32], [27, 31], [28, 32]
+        ];
+
+        // Initialize the application
+        const app = new VitruvianPerformer();
+    </script>
+</body>
+</html>
