@@ -53,12 +53,9 @@ Drawing inspiration from Da Vinci's masterpiece, our system creates a **Vitruvia
 ## 📁 Repository Structure
 
 ```
-├── vitruvian-performer.html     # Web-based implementation (recommended)
 ├── main.py                      # Python implementation with MIDI output
 ├── index.html                   # Alternative web interface
 ├── paper.txt                    # Research paper content
-├── conference_Details.txt       # UbiMus 2025 conference information
-├── requirements.txt             # Python dependencies
 └── README.md                    # This file
 ```
 
